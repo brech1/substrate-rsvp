@@ -47,10 +47,7 @@ pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
 /// Import the template pallet.
-pub use pallet_template;
-
-/// Import the uniques pallet.
-pub use pallet_uniques;
+pub use pallet_rsvp;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -274,29 +271,15 @@ impl pallet_sudo::Config for Runtime {
 	type RuntimeCall = RuntimeCall;
 }
 
-/// Configure the pallet-template in pallets/template.
-impl pallet_template::Config for Runtime {
-	type RuntimeEvent = RuntimeEvent;
+parameter_types! {
+	pub const MaxWorkshopNameLength: u32 = 100;
 }
 
-/// Configure the pallet-template in pallets/template.
-impl pallet_uniques::Config for Runtime {
+/// Configure the pallet-rsvp in pallets/rsvp.
+impl pallet_rsvp::Config for Runtime {
 	type RuntimeEvent = RuntimeEvent;
-	type CollectionId = u32;
-	type ItemId = u32;
-	type Currency = Balances;
-	type CreateOrigin = AsEnsureOriginWithArg<frame_system::EnsureSigned<AccountId>>;
-	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
-	type Locker = ();
-	type CollectionDeposit = ConstU128<2>;
-	type ItemDeposit = ConstU128<1>;
-	type MetadataDepositBase = ConstU128<1>;
-	type AttributeDepositBase = ConstU128<1>;
-	type DepositPerByte = ConstU128<1>;
-	type StringLimit = ConstU32<50>;
-	type KeyLimit = ConstU32<50>;
-	type ValueLimit = ConstU32<50>;
-	type WeightInfo = ();
+	type MaxWorkshopNameLength = MaxWorkshopNameLength;
+	type Rand = RandomnessCollectiveFlip;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -315,9 +298,8 @@ construct_runtime!(
 		Balances: pallet_balances,
 		TransactionPayment: pallet_transaction_payment,
 		Sudo: pallet_sudo,
-		// Include the custom logic from the pallet-template in the runtime.
-		TemplateModule: pallet_template,
-		Uniques: pallet_uniques,
+		// Include the custom logic from the pallet-rsvp in the runtime.
+		Rsvp: pallet_rsvp,
 	}
 );
 
@@ -364,8 +346,7 @@ mod benches {
 		[frame_system, SystemBench::<Runtime>]
 		[pallet_balances, Balances]
 		[pallet_timestamp, Timestamp]
-		[pallet_template, TemplateModule]
-		[pallet_uniques, Uniques]
+		[pallet_rsvp, Rsvp]
 	);
 }
 

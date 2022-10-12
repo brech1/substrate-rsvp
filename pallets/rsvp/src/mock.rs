@@ -1,5 +1,9 @@
-use crate as pallet_template;
-use frame_support::traits::{ConstU16, ConstU64};
+use crate as pallet_rsvp;
+use frame_support::{
+	parameter_types,
+	traits::{ConstU16, ConstU64},
+};
+use frame_support_test::TestRandomness;
 use frame_system as system;
 use sp_core::H256;
 use sp_runtime::{
@@ -18,7 +22,7 @@ frame_support::construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic,
 	{
 		System: frame_system,
-		TemplateModule: pallet_template,
+		Rsvp: pallet_rsvp,
 	}
 );
 
@@ -49,8 +53,16 @@ impl system::Config for Test {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
-impl pallet_template::Config for Test {
+parameter_types! {
+	pub const MaxWorkshopNameLength: u32 = 10;
+}
+
+impl pallet_rsvp::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
+
+	type MaxWorkshopNameLength = MaxWorkshopNameLength;
+
+	type Rand = TestRandomness<Self>;
 }
 
 // Build genesis storage according to the mock runtime.
